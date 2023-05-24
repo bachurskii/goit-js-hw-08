@@ -1,36 +1,39 @@
 import { throttle } from 'lodash';
-
-const form = document.querySelector('feedback-form');
-const email = document.querySelector('input [name="email"]');
-const message = document.querySelector('textarea [name="message"]');
-
-const LOCALSTORAGE_KEY = 'feedback-form-state';
+const form = document.querySelector('.feedback-form');
+const emailForm = form.querySelector('input[name="email"]');
+const messageForm = form.querySelector('textarea[name="message"]');
 
 form.addEventListener(
   'input',
-  throttle(event => {
-    const saveKey = { email: email.value, message: message.value };
-    localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(saveKey));
+  throttle(() => {
+    const checkFields = {
+      email: emailForm.value,
+      message: messageForm.value,
+    };
+    localStorage.setItem('feedback-form-state', JSON.stringify(checkFields));
   }, 500)
 );
 
-form.addEventListener('submit', event => {
-  event.preventDefault();
-  console.log({ email: email.value, message: message.value });
-  form.reset();
-  localStorage.removeItem(LOCALSTORAGE_KEY);
+window.addEventListener('DOMContentLoaded', () => {
+  const checkPages = localStorage.getItem('feedback-form-state');
+  if (checkPages) {
+    const checkFields = JSON.parse(checkPages);
+    emailForm.value = checkFields.email;
+    messageForm.value = checkFields.message;
+  }
 });
 
-const load = key => {
-  try {
-    const serializedState = localStorage.getItem(key);
-    return serializedState === null ? undefined : JSON.parse(serializedState);
-  } catch (error) {
-    console.error('Get state error: ', error.message);
-  }
-};
-const storageData = load(LOCALSTORAGE_KEY);
-if (storageData) {
-  email.value = storageData.email;
-  message.value = storageData.message;
-}
+form.addEventListener('submit', event => {
+  event.preventDefault();
+
+  const checkFields = {
+    email: emailForm.value,
+    message: messageForm.value,
+  };
+
+  localStorage.removeItem('feedback-form-state');
+  emailForm.value = '';
+  messageForm.value = '';
+
+  console.log(checkFields);
+});

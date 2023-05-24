@@ -10,8 +10,8 @@ videoPlayer.on(
     localStorage.setItem('videoplayer-current-time', e.seconds);
   }, 1000)
 );
-videoPlayer
-  .setCurrentTime(localStorage.getItem('videoplayer-current-time'))
-  .catch(function (eror) {
-    console.eror(eror);
-  });
+videoPlayer.setCurrentTime(localStorage.getItem('videoplayer-current-time'));
+const checkPlayer = localStorage.getItem('videoplayer-current-time');
+if (checkPlayer !== null) {
+  videoPlayer.setCurrentTime(checkPlayer);
+}
